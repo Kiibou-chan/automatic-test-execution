@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/automatic-test-execution.main.iml" filepath="$PROJECT_DIR$/.idea/modules/automatic-test-execution.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/automatic-test-execution.test.iml" filepath="$PROJECT_DIR$/.idea/modules/automatic-test-execution.test.iml" />
     </modules>
   </component>
 </project>

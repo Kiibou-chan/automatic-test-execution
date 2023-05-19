@@ -38,16 +38,26 @@ class TestRunner(private val watchPath: Path) {
     }
 
     private fun fileChanged(file: Path) {
-        if (compiler.compile(JavaFile(file.toUri(), JavaFileObject.Kind.SOURCE))) {
+        val javaFile = JavaFile(file.toUri())
+
+        if (compiler.compile(javaFile)) {
             val fileName = file.name.split(".")[0]
+            val packageName = javaFile.getPackage()
+
+            val fqn = if (packageName.isEmpty()) {
+                fileName
+            } else {
+                "${packageName}.$fileName"
+            }
+
             val fileObject =
-                compiler.fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, "space.kiibou", fileName, null)
+                compiler.fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, packageName, fileName, null)
 
             val compiledFile = File(fileObject.toUri().toString().removePrefix("file:/") + ".class")
 
             println("Compiled $compiledFile")
 
-            val cls = classFromBytes<Any>("space.kiibou.$fileName", compiledFile.readBytes())
+            val cls = classFromBytes<Any>(fqn, compiledFile.readBytes())
 
             if (cls != null) {
                 /*
@@ -91,7 +101,7 @@ class TestRunner(private val watchPath: Path) {
 }
 
 fun main() {
-    val testRunner = TestRunner(Paths.get("src/test/kotlin/space/kiibou"))
+    val testRunner = TestRunner(Paths.get("src/test/java/space/kiibou"))
 
     testRunner.run()
 }
