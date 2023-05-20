@@ -2,6 +2,7 @@ package space.kiibou
 
 import java.net.URI
 import java.nio.charset.Charset
+import java.nio.file.Path
 import java.util.regex.Pattern
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
@@ -9,6 +10,8 @@ import kotlin.io.path.readLines
 import kotlin.io.path.toPath
 
 class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE) {
+    constructor(path: Path): this(path.toUri())
+
 
     private val content: String = uri.toPath().readLines(Charset.defaultCharset()).joinToString("\n")
 

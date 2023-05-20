@@ -36,7 +36,7 @@ class TestRunner(private val watchPath: Path) {
     }
 
     private fun fileChanged(file: Path) {
-        val javaFile = JavaFile(file.toUri())
+        val javaFile = JavaFile(file)
 
         if (compiler.compile(javaFile)) {
             val fileName = javaFile.getClassName() ?: throw IllegalStateException("Error processing file $file! Could not find class name.")
