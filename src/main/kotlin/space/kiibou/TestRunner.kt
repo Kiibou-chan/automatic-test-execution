@@ -98,8 +98,8 @@ class TestRunner(private val watchPath: Path) {
     }
 }
 
-fun main() {
-    val testRunner = TestRunner(Paths.get("src/test/java/space/kiibou"))
+fun main(args: Array<String>) {
+    val testRunner = TestRunner(Paths.get(args[0]))
 
     testRunner.run()
 }
