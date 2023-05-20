@@ -39,14 +39,10 @@ class TestRunner(private val watchPath: Path) {
         val javaFile = JavaFile(file)
 
         if (compiler.compile(javaFile)) {
-            val fileName = javaFile.getClassName() ?: throw IllegalStateException("Error processing file $file! Could not find class name.")
-            val packageName = javaFile.getPackage()
-
-            val fqn = if (packageName.isEmpty()) {
-                fileName
-            } else {
-                "${packageName}.$fileName"
-            }
+            val fileName = javaFile.className
+                ?: throw IllegalStateException("Error processing file $file! Could not find class name.")
+            val packageName = javaFile.pkg
+            val fqn = javaFile.fqn!!
 
             val fileObject =
                 compiler.fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, packageName, fileName, null)

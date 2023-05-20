@@ -26,28 +26,28 @@ class JavaFileTest {
     fun testGetPackage() {
         val file = getJavaFile("TestClass.java")
 
-        assertEquals("test._1", file.getPackage())
+        assertEquals("test._1", file.pkg)
     }
 
     @Test
     fun testNoPackage() {
         val file = getJavaFile("EmptyFile.java")
 
-        assertEquals("", file.getPackage())
+        assertEquals("", file.pkg)
     }
 
     @Test
     fun testGetName() {
         val file = getJavaFile("TestClass.java")
 
-        assertEquals("TestClass", file.getClassName())
+        assertEquals("TestClass", file.className)
     }
 
     @Test
     fun testNoName() {
         val file = getJavaFile("EmptyFile.java")
 
-        assertNull(file.getClassName())
+        assertNull(file.className)
     }
 
     @Test

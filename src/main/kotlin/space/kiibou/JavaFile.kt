@@ -12,24 +12,25 @@ import kotlin.io.path.toPath
 class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE) {
     constructor(path: Path) : this(path.toUri())
 
-
     private val content: String = uri.toPath().readLines(Charset.defaultCharset()).joinToString("\n")
 
-    fun getPackage(): String {
-        val matcher = packagePattern.matcher(content)
+    val pkg: String
+        get() {
+            val matcher = packagePattern.matcher(content)
 
-        if (!matcher.find()) return ""
+            if (!matcher.find()) return ""
 
-        return matcher.group("name")
-    }
+            return matcher.group("name")
+        }
 
-    fun getClassName(): String? {
-        val matcher = classNamePattern.matcher(content)
+    val className: String?
+        get() {
+            val matcher = classNamePattern.matcher(content)
 
-        if (!matcher.find()) return null
+            if (!matcher.find()) return null
 
-        return matcher.group("name")
-    }
+            return matcher.group("name")
+        }
 
     val fqn: String?
         get() {
