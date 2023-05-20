@@ -42,4 +42,13 @@ class Compiler {
         return res
     }
 
+    fun getCompiledBytecode(file: JavaFile): ByteArray {
+        val fileObject =
+            fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, file.pkg, file.className, null)
+
+        val compiledFile = File(fileObject.toUri().toString().removePrefix("file:/") + ".class")
+
+
+    }
+
 }

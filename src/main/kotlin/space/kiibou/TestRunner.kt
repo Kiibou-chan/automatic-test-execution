@@ -38,25 +38,29 @@ class TestRunner(private val watchPath: Path) {
             val cls = classFromBytes<Any>(fqn, compiledFile.readBytes())
 
             if (cls != null) {
-                val listener = SummaryGeneratingListener()
-
-                val request = LauncherDiscoveryRequestBuilder.request()
-                    .selectors(DiscoverySelectors.selectClass(cls))
-                    .build()
-                val launcher = LauncherFactory.create()
-                val testPlan = launcher.discover(request)
-                launcher.registerTestExecutionListeners(listener)
-                launcher.execute(request)
-
-                listener.summary.printTo(PrintWriter(System.out))
-
-                listener.summary.failures.forEach {
-                    println("Test ${it.testIdentifier.displayName} in ${(it.testIdentifier.source.get() as MethodSource).className} failed with exception:")
-                    it.exception.printStackTrace()
-                }
+                executeTests(cls)
             } else {
                 println("Error loading class!")
             }
+        }
+    }
+
+    private fun executeTests(cls: Class<out Any>?) {
+        val listener = SummaryGeneratingListener()
+
+        val request = LauncherDiscoveryRequestBuilder.request()
+            .selectors(DiscoverySelectors.selectClass(cls))
+            .build()
+        val launcher = LauncherFactory.create()
+        val testPlan = launcher.discover(request)
+        launcher.registerTestExecutionListeners(listener)
+        launcher.execute(request)
+
+        listener.summary.printTo(PrintWriter(System.out))
+
+        listener.summary.failures.forEach {
+            println("Test ${it.testIdentifier.displayName} in ${(it.testIdentifier.source.get() as MethodSource).className} failed with exception:")
+            it.exception.printStackTrace()
         }
     }
 }
