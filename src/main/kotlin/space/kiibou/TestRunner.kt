@@ -10,29 +10,13 @@ import java.io.PrintWriter
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.tools.StandardLocation
-import kotlin.io.path.readLines
 
 class TestRunner(private val watchPath: Path) {
+    private val fileWatcher = FileWatcher()
     private val compiler = Compiler()
 
     fun run() {
-        val hashCodes: MutableMap<Path, Int> = mutableMapOf()
-
-        println(System.getProperty("java.class.path").split(File.pathSeparator))
-
-        watchFile(watchPath) {
-            val hashCode = it.readLines().hashCode()
-
-            if (!hashCodes.containsKey(it) || hashCodes.containsKey(it) && hashCodes[it] != hashCode) {
-                try {
-                    fileChanged(it)
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                }
-
-                hashCodes[it] = hashCode
-            }
-        }
+        fileWatcher.onFileChange(watchPath, onModify = ::fileChanged)
     }
 
     private fun fileChanged(file: Path) {
@@ -54,23 +38,6 @@ class TestRunner(private val watchPath: Path) {
             val cls = classFromBytes<Any>(fqn, compiledFile.readBytes())
 
             if (cls != null) {
-                /*
-                val obj = cls.getConstructor().newInstance()
-
-                cls.methods.forEach { method ->
-                    if (method.name.contains("test") && method.parameterCount == 0) {
-                        println("Found Method $method")
-                        try {
-                            method.invoke(obj)
-                        } catch (ex: InvocationTargetException) {
-                            ex.targetException.printStackTrace()
-                        } catch (ex: Throwable) {
-                            ex.printStackTrace()
-                        }
-                    }
-                }
-                 */
-
                 val listener = SummaryGeneratingListener()
 
                 val request = LauncherDiscoveryRequestBuilder.request()
