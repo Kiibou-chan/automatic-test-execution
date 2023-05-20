@@ -10,7 +10,7 @@ import kotlin.io.path.readLines
 import kotlin.io.path.toPath
 
 class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE) {
-    constructor(path: Path): this(path.toUri())
+    constructor(path: Path) : this(path.toUri())
 
 
     private val content: String = uri.toPath().readLines(Charset.defaultCharset()).joinToString("\n")
@@ -31,12 +31,22 @@ class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE)
         return matcher.group("name")
     }
 
+    val fqn: String?
+        get() {
+            val name = className ?: return null
+            val pkg = this.pkg
+
+            return if (pkg.isEmpty()) name
+            else "$pkg.$name"
+        }
+
     override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
         return content
     }
 
     companion object {
-        private val namePattern: Pattern = Pattern.compile("(?<name>[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*)")
+        private val namePattern: Pattern =
+            Pattern.compile("(?<name>[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*)")
         private val packagePattern: Pattern = Pattern.compile("package +$namePattern *;")
         private val classNamePattern: Pattern = Pattern.compile("class +$namePattern *\\{")
     }

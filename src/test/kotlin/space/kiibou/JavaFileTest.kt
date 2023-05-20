@@ -50,4 +50,18 @@ class JavaFileTest {
         assertNull(file.getClassName())
     }
 
+    @Test
+    fun testFQN() {
+        val file = getJavaFile("TestClass.java")
+
+        assertEquals("test._1.TestClass", file.fqn)
+    }
+
+    @Test
+    fun testNoFQN() {
+        val file = getJavaFile("EmptyFile.java")
+
+        assertNull(file.fqn)
+    }
+
 }
