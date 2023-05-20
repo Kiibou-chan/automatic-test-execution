@@ -9,9 +9,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.tools.JavaFileObject
 import javax.tools.StandardLocation
-import kotlin.io.path.name
 import kotlin.io.path.readLines
 
 class TestRunner(private val watchPath: Path) {
@@ -41,7 +39,7 @@ class TestRunner(private val watchPath: Path) {
         val javaFile = JavaFile(file.toUri())
 
         if (compiler.compile(javaFile)) {
-            val fileName = file.name.split(".")[0]
+            val fileName = javaFile.getClassName() ?: throw IllegalStateException("Error processing file $file! Could not find class name.")
             val packageName = javaFile.getPackage()
 
             val fqn = if (packageName.isEmpty()) {
