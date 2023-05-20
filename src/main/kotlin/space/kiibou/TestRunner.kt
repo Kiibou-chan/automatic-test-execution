@@ -5,11 +5,9 @@ import org.junit.platform.engine.support.descriptor.MethodSource
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
 import org.junit.platform.launcher.core.LauncherFactory
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener
-import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.tools.StandardLocation
 
 class TestRunner(private val watchPath: Path) {
     private val fileWatcher = FileWatcher()
@@ -22,27 +20,12 @@ class TestRunner(private val watchPath: Path) {
     private fun fileChanged(file: Path) {
         val javaFile = JavaFile(file)
 
-        if (compiler.compile(javaFile)) {
-            val fileName = javaFile.className
-                ?: throw IllegalStateException("Error processing file $file! Could not find class name.")
-            val packageName = javaFile.pkg
-            val fqn = javaFile.fqn!!
+        val bytecode = compiler.compile(javaFile)
 
-            val fileObject =
-                compiler.fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, packageName, fileName, null)
+        val cls = classFromBytes<Any>(javaFile.fqn!!, bytecode)
+            ?: throw IllegalStateException("Error loading bytecode for class $file")
 
-            val compiledFile = File(fileObject.toUri().toString().removePrefix("file:/") + ".class")
-
-            println("Compiled $compiledFile")
-
-            val cls = classFromBytes<Any>(fqn, compiledFile.readBytes())
-
-            if (cls != null) {
-                executeTests(cls)
-            } else {
-                println("Error loading class!")
-            }
-        }
+        executeTests(cls)
     }
 
     private fun executeTests(cls: Class<out Any>?) {

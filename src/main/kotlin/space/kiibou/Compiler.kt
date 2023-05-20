@@ -4,6 +4,7 @@ import java.io.File
 import java.nio.charset.Charset
 import java.util.*
 import javax.tools.*
+import kotlin.io.path.toPath
 
 class Compiler {
     val compiler: JavaCompiler = ToolProvider.getSystemJavaCompiler()
@@ -18,7 +19,7 @@ class Compiler {
             )
         }
 
-    fun compile(file: JavaFile): Boolean {
+    fun compile(file: JavaFile): ByteArray {
         println("Compiling $file")
 
         val task = compiler.getTask(System.err.writer(), fileManager, diagnostics, null, null, listOf(file))
@@ -37,18 +38,20 @@ class Compiler {
 
         val res = task.call()
 
+        if (!res) throw CompilerException(file)
+
         fileManager.flush()
 
-        return res
+        return getCompiledBytecode(file)
     }
 
-    fun getCompiledBytecode(file: JavaFile): ByteArray {
+    private fun getCompiledBytecode(file: JavaFile): ByteArray {
         val fileObject =
             fileManager.getFileForOutput(StandardLocation.CLASS_OUTPUT, file.pkg, file.className, null)
 
-        val compiledFile = File(fileObject.toUri().toString().removePrefix("file:/") + ".class")
+        val compiledFile = File(fileObject.toUri().toPath().toString() + ".class")
 
-
+        return compiledFile.readBytes()
     }
 
 }

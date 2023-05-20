@@ -45,6 +45,10 @@ class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE)
         return content
     }
 
+    override fun toString(): String {
+        return "JavaFile($fqn)"
+    }
+
     companion object {
         private val namePattern: Pattern =
             Pattern.compile("(?<name>[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*)")
