@@ -25,10 +25,12 @@ class TestRunner(private val watchPath: Path) {
         executor.printSummary(System.out)
     }
 
-}
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val testRunner = TestRunner(Paths.get(args[0]))
 
-fun main(args: Array<String>) {
-    val testRunner = TestRunner(Paths.get(args[0]))
-
-    testRunner.run()
+            testRunner.run()
+        }
+    }
 }

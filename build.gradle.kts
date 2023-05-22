@@ -1,4 +1,5 @@
 plugins {
+    application
     kotlin("jvm") version "1.8.20"
 }
 
@@ -25,4 +26,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(11)
+}
+
+application {
+    mainClass.set("space.kiibou.TestRunner")
+
+
 }
