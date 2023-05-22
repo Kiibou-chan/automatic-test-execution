@@ -23,18 +23,18 @@ class JavaFile(uri: URI) : SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE)
             return matcher.group("name")
         }
 
-    val className: String?
+    val className: String
         get() {
             val matcher = classNamePattern.matcher(content)
 
-            if (!matcher.find()) return null
+            if (!matcher.find()) throw IllegalStateException("Error parsing file ${this.uri}. Could not find class name.")
 
             return matcher.group("name")
         }
 
-    val fqn: String?
+    val fqn: String
         get() {
-            val name = className ?: return null
+            val name = className
             val pkg = this.pkg
 
             return if (pkg.isEmpty()) name
